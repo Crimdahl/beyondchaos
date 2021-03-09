@@ -262,7 +262,7 @@ NORMAL_CODES = [
     Code('strangejourney', "BIZARRE ADVENTURE", "A prototype entrance randomizer, similar to the ancientcave mode. Includes all maps and event tiles, and is usually extremely hard to beat by itself.", "experimental"),
     Code('supernatural', "SUPER NATURAL MAGIC MODE", "Makes it so that any character with the Magic command will have natural magic.", "minor"),
     Code('suplexwrecks', "SUPLEX MODE", "All characters use the Sabin sprite, as well as having a name similar to Sabin. All characters have the Blitz and Suplex commands, and every enemy can be hit by Suplex.", "major"),
-    Code('thescenarionottaken', 'DIVERGENT PATHS MODE', "Changes the way the 3 scenarios are split up. WARNING: Causes crashes after Kefka at Narshe when used in conjunction with notawaiter, rendering the seed unplayable past that point.", "experimental"),
+    Code('thescenarionottaken', 'DIVERGENT PATHS MODE', "Changes the way the 3 scenarios are split up.", "major"),
     Code('worringtriad', "START IN WOR", "The player will start in the World of Ruin, with all of the World of Balance treasure chests, along with a guaranteed set of items, and more Lores.", "major"),
 ]
 
