@@ -1164,6 +1164,32 @@ def randomize_forest():
         exit = random.choice(wrong_exits)
         map_entrance_to_exit(e, exit)
 
+def reset_global_variables():
+    global locations
+    global zones
+    global unused_locs
+    global reachdict
+    global mapnames
+    global locdict
+    global chest_id_counts
+    global mapbattlebgs
+    global maplocations
+    global maplocations_reverse
+    global maplocations_override
+    locations = None
+    zones = None
+    unused_locs = None
+    reachdict = None
+    mapnames = {}
+    locdict = {}
+    chest_id_counts = None
+    mapbattlebgs = {}
+    maplocations = {}
+    maplocations_reverse = {}
+    maplocations_override = {}
+
+    init()
+    return
 
 if __name__ == "__main__":
     from sys import argv

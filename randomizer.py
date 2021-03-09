@@ -11,32 +11,33 @@ from hashlib import md5
 
 from ancient import manage_ancient
 from appearance import manage_character_appearance
-from character import get_characters, get_character, equip_offsets
-from chestrandomizer import mutate_event_items, get_event_items
+from character import get_characters, get_character, equip_offsets, reset_global_variables as resetc
+from chestrandomizer import mutate_event_items, get_event_items, reset_global_variables as resetcr
 from decompress import Decompressor
 from dialoguemanager import manage_dialogue_patches, get_dialogue, set_dialogue, read_dialogue, read_location_names, write_location_names
-from esperrandomizer import (get_espers, allocate_espers, randomize_magicite)
+from esperrandomizer import (get_espers, allocate_espers, randomize_magicite, reset_global_variables as reseter)
 from formationrandomizer import (REPLACE_FORMATIONS, KEFKA_EXTRA_FORMATION, NOREPLACE_FORMATIONS,
-                                 get_formations, get_fsets, get_formation)
+                                 get_formations, get_fsets, get_formation, reset_global_variables as resetfr)
 from itemrandomizer import (reset_equippable, get_ranked_items, get_item,
                             reset_special_relics, reset_rage_blizzard,
-                            reset_cursed_shield, unhardcode_tintinabar)
-from locationrandomizer import (get_locations, get_location, get_zones, get_npcs, randomize_forest)
+                            reset_cursed_shield, unhardcode_tintinabar, reset_global_variables as resetir)
+from locationrandomizer import (get_locations, get_location, get_zones, get_npcs, randomize_forest, reset_global_variables as resetlr)
 from menufeatures import (improve_item_display, improve_gogo_status_menu, improve_rage_menu,
                           show_original_names, improve_dance_menu, y_equip_relics, fix_gogo_portrait)
 from monsterrandomizer import (REPLACE_ENEMIES, MonsterGraphicBlock, get_monsters,
                                get_metamorphs, get_ranked_monsters,
                                shuffle_monsters, get_monster, read_ai_table,
                                change_enemy_name, randomize_enemy_name,
-                               get_collapsing_house_help_skill)
-from musicrandomizer import randomize_music, manage_opera, insert_instruments
+                               get_collapsing_house_help_skill, reset_global_variables as resetmor)
+from musicrandomizer import randomize_music, manage_opera, insert_instruments, reset_global_variables as resetmur
+from namerandomizer import reset_global_variables as resetnr
 from options import ALL_MODES, ALL_FLAGS, options_
 from patches import allergic_dog, banon_life3, vanish_doom, evade_mblock, death_abuse, no_kutan_skip, show_coliseum_rewards
 from shoprandomizer import (get_shops, buy_owned_breakable_tools)
 from sillyclowns import randomize_passwords, randomize_poem
 from skillrandomizer import (SpellBlock, CommandBlock, SpellSub, ComboSpellSub,
                              RandomSpellSub, MultipleSpellSub, ChainSpellSub,
-                             get_ranked_spells, get_spell)
+                             get_ranked_spells, get_spell, reset_global_variables as resetsr)
 from towerrandomizer import randomize_tower
 from utils import (COMMAND_TABLE, LOCATION_TABLE, LOCATION_PALETTE_TABLE,
                    FINAL_BOSS_AI_TABLE, SKIP_EVENTS_TABLE, DANCE_NAMES_TABLE,
@@ -1825,17 +1826,17 @@ def manage_monsters():
             if darkworld:
                 m.increase_enemy_difficulty()
             m.mutate(options_=options_, change_skillset=change_skillset, safe_solo_terra=safe_solo_terra)
-
+            
         m.tweak_fanatics()
         m.relevel_specifics()
-
+        
     change_enemy_name(fout, 0x166, "L.255Magic")
-
+    
     shuffle_monsters(monsters, safe_solo_terra=safe_solo_terra)
     for m in monsters:
         m.randomize_special_effect(fout)
         m.write_stats(fout)
-
+        
     return monsters
 
 
@@ -1857,11 +1858,17 @@ def manage_monster_appearance(monsters, preserve_graphics=False):
             g.palette_data = g.palette_data[:0x10]
 
     nonbosses = [m for m in monsters if not m.is_boss and not m.boss_death]
+    print("Number of nonbosses: " + str(len(nonbosses)))
     bosses = [m for m in monsters if m.is_boss or m.boss_death]
+    print("Number of bosses: " + str(len(bosses)))
     assert not set(bosses) & set(nonbosses)
     nonbossgraphics = [m.graphics.graphics for m in nonbosses]
+    print("Number of nonboss graphics: " + str(len(nonbossgraphics)))
     bosses = [m for m in bosses if m.graphics.graphics not in nonbossgraphics]
-
+    print("Number of boss graphics: " + str(len(bosses)))
+    #
+    #
+    #
     for i, m in enumerate(nonbosses):
         if "Chupon" in m.name:
             m.update_pos(6, 6)
@@ -4377,6 +4384,7 @@ def randomize(args):
     commands = {c.name:c for c in commands}
 
     characters = get_characters()
+    print("Characters identified: " + str(len(characters)))
 
     activation_string = options_.activate_from_string(flags)
 
@@ -4428,6 +4436,7 @@ def randomize(args):
     reseed()
 
     spells = get_ranked_spells(sourcefile)
+    print("Spells identified: " + str(len(spells)))
     if options_.is_code_active('madworld'):
         random.shuffle(spells)
         for i, s in enumerate(spells):
@@ -4454,19 +4463,28 @@ def randomize(args):
     preserve_graphics = (not options_.swap_sprites and
                          not options_.is_code_active('partyparty'))
 
-    monsters = get_monsters(sourcefile)
-    formations = get_formations(sourcefile)
-    fsets = get_fsets(sourcefile)
-    locations = get_locations(outfile)
-    items = get_ranked_items(sourcefile)
-    zones = get_zones(sourcefile)
-    get_metamorphs(sourcefile)
+    print("Getting data from ROM.")
 
+    monsters = get_monsters(sourcefile)
+    print("Monsters identified: " + str(len(monsters)))
+    formations = get_formations(sourcefile)
+    print("Formations identified: " + str(len(formations)))
+    fsets = get_fsets(sourcefile)
+    print("Formation Sets identified: " + str(len(fsets)))
+    locations = get_locations(outfile)
+    
+    print("Locations identified: " + str(len(locations)))
+    items = get_ranked_items(sourcefile)
+    print("Items identified: " + str(len(items)))
+    zones = get_zones(sourcefile)
+    print("Zones identified: " + str(len(zones)))
+    get_metamorphs(sourcefile)    
     aispaces = []
     aispaces.append(FreeBlock(0xFCF50, 0xFCF50 + 384))
     aispaces.append(FreeBlock(0xFFF47, 0xFFF47 + 87))
     aispaces.append(FreeBlock(0xFFFBE, 0xFFFBE + 66))
 
+    print("Randomizing items.")
     if options_.random_final_dungeon or options_.is_code_active('ancientcave'):
         # do this before treasure
         if options_.random_enemy_stats and options_.random_treasure and options_.random_character_stats:
@@ -4492,11 +4510,14 @@ def randomize(args):
     reseed()
 
     items = get_ranked_items()
+    print("Items identified: " + str(len(items)))
     if options_.random_items:
         manage_items(items, changed_commands=changed_commands)
         buy_owned_breakable_tools(fout)
         improve_item_display(fout)
     reseed()
+
+    print("Randomizing enemy stats.")
 
     if options_.random_enemy_stats:
         aispaces = manage_final_boss(aispaces)
@@ -4509,11 +4530,16 @@ def randomize(args):
             m.screw_tutorial_bosses(old_vargas_fight=options_.is_code_active('rushforpower'))
             m.write_stats(fout)
 
+
+    print("Shuffling espers.")
+
     # This needs to be before manage_monster_appearance or some of the monster palettes will be messed up.
     esper_replacements = {}
     if options_.randomize_magicite:
         esper_replacements = randomize_magicite(fout, sourcefile)
     reseed()
+
+    print("Randomizing palettes.")
 
     if options_.random_palettes_and_names and options_.random_enemy_stats:
         mgs = manage_monster_appearance(monsters,
@@ -4527,10 +4553,14 @@ def randomize(args):
         show_original_names(fout)
     reseed()
 
+    print("Randomizing character stats.")
+
     if options_.random_character_stats:
         # do this after items
         manage_equipment(items)
     reseed()
+
+    print("Randomizing espers.")
 
     esperrage_spaces = [FreeBlock(0x26469, 0x26469 + 919)]
     if options_.random_espers:
@@ -4541,6 +4571,8 @@ def randomize(args):
     reseed()
 
     esperrage_spaces = manage_reorder_rages(esperrage_spaces)
+
+    print("Doing things I don't understand yet.")
 
     titlesub = Substitution()
     titlesub.bytestring = [0xFD] * 4
@@ -4562,20 +4594,28 @@ def randomize(args):
     savecheck_sub.write(fout)
     reseed()
 
+    print("Shuffling character commands.")
+
     if options_.shuffle_commands and not options_.is_code_active('suplexwrecks'):
         # do this after swapping beserk
         manage_natural_magic()
     reseed()
+
+    print("Assigning berserker role.")
 
     if options_.random_zerker:
         umaro_risk = manage_umaro(commands)
         reset_rage_blizzard(items, umaro_risk, fout)
     reseed()
 
+    print("Shuffling guest character commands.")
+
     if options_.shuffle_commands and not options_.is_code_active('suplexwrecks'):
         # do this after swapping beserk
         manage_tempchar_commands()
     reseed()
+
+    print("Randomizing command changers.")
 
     start_in_wor = options_.is_code_active('worringtriad')
     if options_.random_character_stats:
@@ -4597,6 +4637,8 @@ def randomize(args):
         for c in characters:
             c.mutate_stats(fout, start_in_wor, read_only=True)
     reseed()
+
+    print("Randomizing enemy formations.")
 
     if options_.random_formations:
         formations = get_formations()
@@ -4632,6 +4674,8 @@ def randomize(args):
     for f in get_formations():
         f.write_data(fout)
 
+    print("Randomizing treasure.")
+
     if options_.random_treasure:
         wedge_money = 1000 + random.randint(0, 1500)
         vicks_money = 500 + random.randint(0, 750)
@@ -4660,14 +4704,20 @@ def randomize(args):
         manage_ancient(options_, fout, sourcefile, form_music_overrides=form_music)
     reseed()
 
+    print("Randomizing magitek ability.")
+
     if options_.shuffle_commands or options_.replace_commands or options_.random_enemy_stats:
         manage_magitek()
     reseed()
+
+    print("Teaching blitzes.")
 
     if options_.random_blitz:
         if 0x0A not in changed_commands:
             manage_blitz()
     reseed()
+
+    print("Checking the date.")
 
     if options_.is_code_active('halloween'):
         demon_chocobo_sub = Substitution()
@@ -4729,8 +4779,11 @@ def randomize(args):
     reseed()
 
     if options_.random_clock and not options_.is_code_active('ancientcave'):
+        print("Putting batteries in the ZoZo clock.")
         manage_clock()
     reseed()
+
+    print("Teaching characters to dance.")
 
     if options_.random_dances:
         if 0x13 not in changed_commands:
@@ -4738,12 +4791,15 @@ def randomize(args):
             improve_dance_menu(fout)
     reseed()
 
+    print("Assembling the orchestra.")
+
     has_music = options_.is_any_code_active(['johnnydmad', 'johnnyachaotic'])
     if has_music or options_.is_code_active('alasdraco'):
         insert_instruments(fout, 0x310000)
         opera = None
 
     if options_.is_code_active('alasdraco'):
+        print("Firing the current impresario.")
         opera = manage_opera(fout, has_music)
     reseed()
 
@@ -4753,6 +4809,7 @@ def randomize(args):
     reseed()
 
     if options_.mode.name == "katn":
+        print("Giving Terra some espers.")
         start_with_random_espers()
     reseed()
 
@@ -4760,6 +4817,8 @@ def randomize(args):
         house_hint()
     reseed()
     reseed()
+
+    print("Making a character take poetry lessons.")
 
     randomize_poem(fout)
     randomize_passwords()
@@ -4888,8 +4947,82 @@ def randomize(args):
     if options_.is_code_active('bingoboingo'):
         manage_bingo()
 
+    reset_all()
+
     return outfile
 
+def reset_all():
+    global VERSION
+    global BETA
+    global VERSION_ROMAN
+    global TEST_ON
+    global TEST_SEED
+    global TEST_FILE
+    global seed
+    global flags
+    global seedcounter
+    global sourcefile
+    # global outfile
+    global fout
+    global NEVER_REPLACE
+    global RESTRICTED_REPLACE
+    global ALWAYS_REPLACE
+    global FORBIDDEN_COMMANDS
+    global MD5HASHNORMAL
+    global MD5HASHTEXTLESS
+    global TEK_SKILLS
+    global namelocdict
+    global changed_commands
+    global randlog
+
+    VERSION = "4"
+    BETA = False
+    VERSION_ROMAN = "IV"
+    if BETA:
+        VERSION_ROMAN += " BETA"
+    TEST_ON = False
+    TEST_SEED = "44.abcefghijklmnopqrstuvwxyz-partyparty.42069"
+    TEST_FILE = "program.rom"
+    seed, flags = None, None
+    seedcounter = 1
+    sourcefile = None
+    # outfile = None
+    fout = None
+
+
+    NEVER_REPLACE = ["fight", "item", "magic", "row", "def", "magitek", "lore",
+                    "jump", "mimic", "xmagic", "summon", "morph", "revert"]
+    RESTRICTED_REPLACE = ["throw", "steal"]
+    ALWAYS_REPLACE = ["leap", "possess", "health", "shock"]
+    FORBIDDEN_COMMANDS = ["leap", "possess"]
+
+    MD5HASHNORMAL = "e986575b98300f721ce27c180264d890"
+    MD5HASHTEXTLESS = "f08bf13a6819c421eee33ee29e640a1d"
+
+
+    TEK_SKILLS = (
+        # [0x18, 0x6E, 0x70, 0x7D, 0x7E] +
+        list(range(0x86, 0x8B)) +
+        [0xA7, 0xB1] +
+        list(range(0xB4, 0xBA)) +
+        [0xBF, 0xCD, 0xD1, 0xD4, 0xD7, 0xDD, 0xE3])
+
+
+    namelocdict = {}
+    changed_commands = set([])
+
+    randlog = {}
+
+    resetc()
+    resetcr()
+    reseter()
+    resetfr()
+    resetir()
+    resetlr()
+    resetmor()
+    resetmur()
+    resetnr()
+    resetsr()
 
 if __name__ == "__main__":
     args = list(argv)

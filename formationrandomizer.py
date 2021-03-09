@@ -133,7 +133,7 @@ class Formation():
             self.ap = ord(f.read(1))
         else:
             self.ap = None
-
+            
         f.close()
 
     @property
@@ -252,15 +252,19 @@ class Formation():
         self.enemies = []
         self.big_enemy_ids = []
         for i, eid in enumerate(self.enemy_ids):
+            # print("Monsterdict Name: " + str(monsterdict[eid].name))
             if eid == 0xFF and not self.enemies_present & (1 << i):
+                print("Enemy formation had no enemies.")
                 self.enemies.append(None)
                 continue
             if self.bosses & (1 << i):
+                print("Enemy was a boss formation.")
                 eid += 0x100
             self.big_enemy_ids.append(eid)
             self.enemies.append(monsterdict[eid])
             enemy_pos = self.enemy_pos[i]
             x, y = enemy_pos >> 4, enemy_pos & 0xF
+            print("Updating enemy positions: " + str(x) + " " + str(y))
             self.enemies[i].update_pos(x, y)
         for e in self.enemies:
             if not e:
@@ -494,6 +498,7 @@ def get_formation(formid):
 
 def get_formations(filename=None):
     global formdict
+    # print("Formdict is none: " + str(type(formdict)))
     if formdict:
         return [f for (_, f) in sorted(formdict.items())]
 
@@ -525,6 +530,18 @@ def get_fsets(filename=None):
 def get_fset(setid):
     return fsetdict[setid]
 
+def reset_global_variables():
+    global REPLACE_FORMATIONS
+    global KEFKA_EXTRA_FORMATION
+    global NOREPLACE_FORMATIONS
+    global fsetdict
+    global formdict
+    REPLACE_FORMATIONS = [0x20e, 0x1ca, 0x1e9, 0x1fa]
+    KEFKA_EXTRA_FORMATION = 0x1FF  # Fake Atma
+    NOREPLACE_FORMATIONS = [0x232, 0x1c5, 0x1bb, 0x230, KEFKA_EXTRA_FORMATION]
+    fsetdict = None
+    formdict = None
+    return
 
 if __name__ == "__main__":
     from sys import argv

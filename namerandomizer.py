@@ -90,6 +90,26 @@ def generate_attack():
         return ("%s %s" % (modifier, move)).strip()
     return modifier + move
 
+def reset_global_variables():
+    global modifiers
+    global moves
+    global enemynames
+    global generator
+    global lookback
+
+    modifiers = [line.strip() for line in open(MODIFIERS_TABLE)]
+    moves = [line.strip() for line in open(MOVES_TABLE)]
+    enemynames = [line.strip() for line in open(ENEMY_NAMES_TABLE).readlines()]
+
+    generator = {}
+    lookback = None
+    for line in open(NAMEGEN_TABLE):
+        key, values = tuple(line.strip().split())
+        generator[key] = values
+        if not lookback:
+            lookback = len(key)
+    return
+
 if __name__ == "__main__":
     for i in range(0x100):
         print(generate_name())

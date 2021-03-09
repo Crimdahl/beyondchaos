@@ -300,6 +300,10 @@ class CommandBlock:
     def disallow_while_berserk(self, fout):
         self.set_bit(0x204D4, fout, unset=True)
 
+def clear_ranked_spells():
+    global spelldict
+    spelldict = {}
+    return
 
 def get_ranked_spells(filename=None, magic_only=False):
     if spelldict:
@@ -721,3 +725,34 @@ class MultipleSpellSub(MultiSpellSubMixin):
         else:
             return "{0} times, use the skill '{1}'".format(
                 self.count, spellnames[self.spellsub.spellid])
+
+def reset_global_variables():
+    global spelldict
+    global spellnames
+    global f
+    global spellbans
+    global wildspells
+    wildspells = None
+    spelldict = {}
+    spellnames = {}
+    f = open(SPELL_TABLE)
+    for line in f:
+        line = line.strip()
+        while '  ' in line:
+            line = line.replace('  ', ' ')
+        value, strength, name = tuple(line.split(','))
+        spellnames[hex2int(value)] = name
+    f.close()
+
+    spellbans = {}
+    f = open(SPELLBANS_TABLE)
+    for line in f:
+        line = line.strip()
+        if line[0] == '#':
+            continue
+        spellid, modifier, name, ban = tuple(line.split(','))
+        if ban == "ban":
+            modifier = int(modifier) * -1
+        spellbans[hex2int(spellid)] = int(modifier)
+    f.close()
+    return

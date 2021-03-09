@@ -1009,3 +1009,63 @@ def unhardcode_tintinabar(fout):
     tintinabar_sub.set_location(0x3F16C)
     tintinabar_sub.bytestring = bytes([0xAD, 0xD8, 0x11, 0x10, 0x12, 0x7B, 0xB5, 0x69, 0x1A, 0xA8, 0x38, 0x7B, 0xC2, 0x20, 0x2A, 0x88, 0xD0, 0xFC, 0x0C, 0x48, 0x14, 0xE2, 0x20, 0x60])
     tintinabar_sub.write(fout)
+
+def reset_global_variables():
+    global ITEM_STATS
+    global STATPROTECT
+    global all_spells
+    global effects_used
+    global itemdict
+    global customs
+    global changed_commands
+    global break_unused_dict
+    global sperelic
+    global sperelic2
+    global invalid_commands
+    global NUM_CHARS
+    global CHAR_MASK
+    global IMP_MASK
+    global UMARO_ID
+    NUM_CHARS = 14
+    CHAR_MASK = 0x3fff
+    IMP_MASK = 0x4000
+    UMARO_ID = 13
+    sperelic = {0x04: (0x25456, 0x2545B),
+                0x08: (0x25455, 0x2545A),
+                0x10: (0x25454, 0x25459),
+                0x20: (0x25453, 0x25458),
+                0x40: (0x25452, 0x25457)}
+
+    sperelic2 = {0x04: (0x3619C, 0x361A1),
+                0x08: (0x3619B, 0x361A0),
+                0x10: (0x3619A, 0x3619F),
+                0x20: (0x36199, 0x3619E),
+                0x40: (0x36198, 0x3619D)}
+
+    invalid_commands = [0x00, 0x04, 0x14, 0x15, 0x19, 0xFF]
+    ITEM_STATS = ["learnrate", "learnspell", "fieldeffect",
+              "statusprotect1", "statusprotect2", "statusacquire3",
+              "statboost1", "special1", "statboost2", "special2",
+              "special3", "targeting", "elements", "speedvigor",
+              "magstam", "breakeffect", "otherproperties", "power",
+              "hitmdef", "elemabsorbs", "elemnulls", "elemweaks",
+              "statusacquire2", "mblockevade", "specialaction"]
+    STATPROTECT = {"fieldeffect": 0xdc,
+                "statusprotect1": 0x00,
+                "statusprotect2": 0x00,
+                "statusacquire3": 0x00,
+                "statboost1": 0x00,
+                "special1": 0x00,
+                "statboost2": 0x02,
+                "special2": 0x28,
+                "special3": 0x60,
+                "otherproperties": 0xdf,
+                "statusacquire2": 0x00}
+    all_spells = None
+    effects_used = []
+    itemdict = {}
+    customs = {}
+    changed_commands = []
+    break_unused_dict = {0x09: list(range(0xA3, 0xAB)),
+                        0x08: list(range(0xAB, 0xB0)) + list(range(0x41, 0x44))}
+    return

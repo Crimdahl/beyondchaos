@@ -1896,3 +1896,52 @@ def read_opera_mml(file):
         print(f"Failed to read {file}")
         raise
     
+def reset_global_variables():
+    global HIROM
+    global MUSIC_PATH
+    global INST_METADATA_OFFSET
+    global CONFIG
+    global freespace
+    global spoiler
+    global f_tellmewhy
+    global DEBUG
+    global FLAGS
+
+    HIROM = 0xC00000
+    MUSIC_PATH = os.path.join('custom','music')
+    INST_METADATA_OFFSET = 0x310000    #0x600 bytes
+    CONFIG = configparser.RawConfigParser({
+            'free_rom_space': '310600-380000',
+            'allow_music_repeats': 'False',
+            'preserve_song_data': 'False',
+            'battle_music_lookup': 'battle1, boss2, boss3, battle2, battle3, 3B, battle4, boss1',
+            'battle_music_ids': '24, new, new, new',
+            'boss_music_ids': 'new, 14, 33',
+            'pause_current_song': 'battle1, battle2, battle3, battle4, boss1',
+            'songcount': '53C5E',
+            'brrpointers': '53C5F, 53D1B',
+            'brrloops': '53D1C, 53D99',
+            'brrpitch': '53D9A, 53E17',
+            'brradsr': '53E18, 53E95',
+            'songpointers': '53E96, 53F94',
+            'instruments': '53F95, 54A34',
+            'brrpointerpointer': '50222, 50228, 5022E',
+            'brrlooppointer': '5041C',
+            'brrpitchpointer': '5049C',
+            'brradsrpointer': '504DE',
+            'songpointerpointer': '50538',
+            'instrumentpointer': '501E3',
+            'songdata': '85C7A, 9FDFF',
+            'pausesongs': '506F9, 506FD',
+            'battlesongs': '2BF3B, 2BF42'
+            })
+    CONFIG.add_section('Music')
+    CONFIG.add_section('MusicPtr')
+    CONFIG.add_section('General')
+
+    freespace = None
+    spoiler = {}
+    f_tellmewhy = False
+    DEBUG = False
+    FLAGS = set()
+    return

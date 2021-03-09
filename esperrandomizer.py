@@ -448,3 +448,49 @@ def get_espers(sourcefile):
         c.set_id(i)
         all_espers.append(c)
     return get_espers(sourcefile)
+
+def reset_global_variables():
+    global items
+    global rankbounds
+    global bonus_ranks
+    global bonus_strings
+    global spells
+    global used
+    global used_bonuses
+    global all_espers
+    all_espers = None
+    items = None
+    rankbounds = {
+        0: 25,
+        1: 50,
+        2: 80,
+        3: 105,
+        4: None}
+    bonus_ranks = {
+        0: [0xFF, 0x0, 0x3, 0xD],
+        1: [0x9, 0xB, 0xF],
+        2: [0x1, 0x4, 0xA, 0xC, 0xE],
+        3: [0x2, 0x5, 0x8, 0x10],
+        4: [0x6]}  # Lv -1 bonus decided elsewhere
+    bonus_strings = {
+        0: "HP + 10%",
+        1: "HP + 30%",
+        2: "HP + 50%",
+        3: "MP + 10%",
+        4: "MP + 30%",
+        5: "MP + 50%",
+        6: "HP + 100%",
+        7: "LV - 1",
+        8: "LV + 50%",
+        9: "STR + 1",
+        0xA: "STR + 2",
+        0xB: "SPD + 1",
+        0xC: "SPD + 2",
+        0xD: "STA + 1",
+        0xE: "STA + 2",
+        0xF: "MAG + 1",
+        0x10: "MAG + 2"}
+    spells = None
+    used = set([])
+    used_bonuses = set([])
+    return

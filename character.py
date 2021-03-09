@@ -232,3 +232,18 @@ class CharacterBlock:
                                    3, 3]))
         if self.id in palettes:
             self.palette = palettes[self.id]
+
+def reset_global_variables():
+    global equip_offsets
+    global CHARSTATNAMES
+    global character_list
+    equip_offsets = {"weapon": 15,
+                    "shield": 16,
+                    "helm": 17,
+                    "armor": 18,
+                    "relic1": 19,
+                    "relic2": 20}
+    CHARSTATNAMES = ["hp", "mp", "vigor", "speed", "stamina", "m.power",
+                    "attack", "defense", "m.def", "evade", "mblock"]
+    character_list = []
+    return

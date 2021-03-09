@@ -492,6 +492,7 @@ class MonsterBlock:
             self.width, self.height = min(self.width, width), min(self.height, height)
 
     def update_pos(self, x, y):
+        #print ("Adding position to enemy.")
         if not self.miny or not self.maxy:
             self.miny, self.maxy = y, y
         self.miny = min(self.miny, y)
@@ -516,7 +517,13 @@ class MonsterBlock:
         candidates = [c for c in candidates if c.name != "_"*10]
 
         if not self.graphics.large:
+            #
+            #
+            #
             if self.miny <= 3:
+                #
+                #
+                #
                 candidates = [c for c in candidates if c.miny <= 4]
             else:
                 candidates = [c for c in candidates if c.miny >= 3]
@@ -639,6 +646,8 @@ class MonsterBlock:
         self.copy_visible(chosen)
 
     def read_stats(self, filename):
+        
+        # print("Value prior to read_stats: " + str(self.miny))
         global all_spells
         global HIGHEST_LEVEL
 
@@ -697,7 +706,7 @@ class MonsterBlock:
             all_spells = get_ranked_spells(filename)
 
         f.close()
-
+        # print("Value after read_stats: " + str(self.miny))
         self.read_ai(filename)
 
     def get_skillset(self, ids_only=True):
@@ -736,7 +745,6 @@ class MonsterBlock:
             return
 
         skillset = set(self.get_skillset())
-
         def similar(s1, s2):
             a = s1.target_enemy_default == s2.target_enemy_default
             b = s1.target_everyone == s2.target_everyone
@@ -762,7 +770,7 @@ class MonsterBlock:
                     if self in f.present_enemies:
                         banned.extend([0xB5, 0xB8, 0xBA])
                         break
-
+                    
         oldskills = sorted([s for s in all_spells if s.spellid in skillset],
                            key=lambda s: s.rank())
         if change_skillset:
@@ -798,10 +806,10 @@ class MonsterBlock:
                     newskill = candidates[index]
                 skillset.add(newskill.spellid)
                 skillmap[skill.spellid] = newskill.spellid
-
+                
         sortedskills = sorted([s for s in all_spells if s.spellid in skillset],
                               key=lambda s: s.rank())
-
+                              
         def mutate_action_skill(spellid):
             skill = [s for s in oldskills if s.spellid == spellid]
             if not skill:
@@ -823,7 +831,7 @@ class MonsterBlock:
             if not newskill.valid:
                 return spellid
             return newskill.spellid
-
+            
         targeting = None
         newscript = []
         for action in self.aiscript:
@@ -871,12 +879,18 @@ class MonsterBlock:
                     else:
                         candidates = [i for i in items if i.itemtype & 0x10 and i.is_weapon]
                         candidates = sorted(candidates, key=lambda c: c.features['power'])
-
+                        
                     first, second = action[2], action[3]
                     first = get_item(first) or candidates[0]
                     second = get_item(second) or candidates[0]
                     for i, a in enumerate([first, second]):
+                        #
+                        #
+                        #
                         index = candidates.index(a)
+                        #
+                        #
+                        #
                         index = mutate_index(index, len(candidates),
                                              [False, True, True],
                                              (-1, 4), (-1, 4))
@@ -930,7 +944,7 @@ class MonsterBlock:
                     action[0] = s
                 assert 0x81 not in action
             newscript.append(action)
-
+            
         assert len(b"".join(newscript)) == len(b"".join(self.aiscript))
         self.aiscript = newscript
 
@@ -1795,7 +1809,7 @@ def get_monsters(filename=None):
     monsters = monsters_from_table(ENEMY_TABLE)
     for m in monsters:
         m.read_stats(filename)
-
+        
     mgs = []
     for j, m in enumerate(monsters):
         mg = MonsterGraphicBlock(pointer=0x127000 + (5*j), name=m.name)
@@ -2067,3 +2081,109 @@ def get_collapsing_house_help_skill():
         return worst_skill.name + "-"
 
     return "battl"
+
+def reset_global_variables():
+    global REPLACE_ENEMIES
+    global stat_order
+    global shortnames
+    global metamorphs
+    global all_spells
+    global HIGHEST_LEVEL
+    global xps
+    global gps
+    global AICODES
+    global monsterdict
+    global globalweights
+    global avgs
+    global statusdict
+    global reverse_statusdict
+    global early_bosses
+    global elemlist
+    global ranked
+    global specialdict
+    global reverse_specialdict
+    global palette_pools
+    palette_pools = {}
+    REPLACE_ENEMIES = [0x10f, 0x136, 0x137]
+    stat_order = ['speed', 'attack', 'hit%', 'evade%', 'mblock%',
+                'def', 'mdef', 'mpow']
+    shortnames = {'level': 'lv',
+                'attack': 'atk',
+                'speed': 'spd',
+                'hit%': 'hit',
+                'evade%': 'evd',
+                'mblock%': 'mblk'}
+    metamorphs = None
+    all_spells = None
+    HIGHEST_LEVEL = 77
+    xps = []
+    gps = []
+    AICODES = {0xF0: 3, 0xF1: 1, 0xF2: 3, 0xF3: 2,
+            0xF4: 3, 0xF5: 3, 0xF6: 3, 0xF7: 1,
+            0xF8: 2, 0xF9: 3, 0xFA: 3, 0xFB: 2,
+            0xFC: 3, 0xFD: 0, 0xFE: 0, 0xFF: 0
+            }
+    monsterdict = {}
+    globalweights, avgs = None, {}
+    statusdict = {
+        "blind": (0, 0x01),
+        "zombie": (0, 0x02),
+        "poison": (0, 0x04),
+        "magitek": (0, 0x08),
+        "vanish": (0, 0x10),
+        "imp": (0, 0x20),
+        "petrify": (0, 0x40),
+        "death": (0, 0x80),
+        "condemned": (1, 0x01),
+        "near death": (1, 0x02),
+        "image": (1, 0x04),
+        "mute": (1, 0x08),
+        "berserk": (1, 0x10),
+        "confuse": (1, 0x20),
+        "seizure": (1, 0x40),
+        "sleep": (1, 0x80),
+        "float": (2, 0x01),
+        "regen": (2, 0x02),
+        "slow": (2, 0x04),
+        "haste": (2, 0x08),
+        "stop": (2, 0x10),
+        "shell": (2, 0x20),
+        "protect": (2, 0x40),
+        "reflect": (2, 0x80),
+        "cover": (3, 0x01),
+        "runic": (3, 0x02),
+        "reraise": (3, 0x04),
+        "morph": (3, 0x08),
+        "casting": (3, 0x10),
+        "disappear": (3, 0x20),
+        "interceptor": (3, 0x40),
+        "floating": (3, 0x80)}
+    reverse_statusdict = {value: key for (key, value) in list(statusdict.items())}
+    early_bosses = [
+        308, # head
+        333, # ipooh
+        341, # rizopas
+        262, # ghosttrain
+        300  # ultros 1
+    ]
+    elemlist = ["fire", "ice", "bolt", "bio", "wind", "pearl", "earth", "water"]
+    ranked = ["casting", "near death", "floating", "regen", "poison", "blind",
+            "shell", "protect", "vanish", "image", "hp drain", "haste",
+            "reflect", "mp drain", "seizure",
+            "condemned", "slow", "mute", "imp", "berserk", "reraise",
+            "sleep", "confuse", "stop", "petrify", "zombie",
+            "morph", "frozen", "death", "interceptor", "magitek",
+            "rage", "dance", "disappear"]
+    specialdict = [k for (k, v) in sorted(statusdict.items(),
+                                        key=lambda k_v: k_v[1])]
+    specialdict = {k: i for (i, k) in enumerate(specialdict)}
+    specialdict["rage"] = 0x18
+    specialdict["dance"] = 0x10
+    del specialdict["float"]
+    del specialdict["cover"]
+    specialdict["frozen"] = 0x19
+    specialdict["hp drain"] = 0x30
+    specialdict["mp drain"] = 0x31
+    reverse_specialdict = {v: k for (k, v) in specialdict.items()}
+    ranked = [specialdict[key] for key in ranked]
+    return

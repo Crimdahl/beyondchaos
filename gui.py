@@ -530,7 +530,8 @@ class Window(QWidget):
                     QMessageBox.critical(self, "Error creating ROM", str(e), QMessageBox.Ok)
                 else:
                     QMessageBox.information(self, "Successfully created ROM", f"Result file: {result_file}", QMessageBox.Ok)
-                sys.exit()
+                QtCore.pyqtRestoreInputHook()
+                #sys.exit()
 
     # read each dictionary and update text field showing flag codes based upon
     #    flags denoted as 'True'

@@ -737,3 +737,109 @@ def mutate_event_items(fout, cutscene_skip=False, crazy_prices=False, no_monster
         for e in event_items_dict[location]:
             e.mutate_contents(cutscene_skip=cutscene_skip, no_monsters=no_monsters, uncapped_monsters=uncapped_monsters, crazy_prices=crazy_prices)
             e.write_data(fout, cutscene_skip=cutscene_skip)
+
+def reset_global_variables():
+    global valid_ids
+    global banned_formids
+    global extra_miabs
+    global orphaned_formations
+    global used_formations
+    global done_items
+    global appropriate_formations
+    global EVENT_ENEMIES
+    global OLD_EVENT_ENEMIES
+    global duplicate_event_item_dict
+    global duplicate_event_item_skip_dict
+    global event_items_dict
+    global event_mem_id
+    global multiple_event_items
+    event_mem_id = 281
+    multiple_event_items = []
+    valid_ids = list(range(1, 0x200))
+    banned_formids = [0, 0x1d7]
+    extra_miabs = []
+    orphaned_formations = None
+    used_formations = []
+    done_items = []
+    appropriate_formations = None
+    EVENT_ENEMIES = [0x00, 0x01, 0x02, 0x06, 0x09, 0x19, 0x1a, 0x1b, 0x1c, 0x22, 0x24,
+                    0x33, 0x38, 0x39, 0x3a, 0x3f, 0x42, 0x43, 0x4f, 0x50, 0x59, 0x60,
+                    0x5e, 0x64, 0x65, 0x73, 0x79, 0x7f, 0x9f, 0xaf, 0xb6, 0xcf, 0xd1,
+                    0xde, 0xe3]
+    OLD_EVENT_ENEMIES = [0x00, 0x01, 0x02, 0x09, 0x19, 0x1b, 0x22, 0x24, 0x33, 0x38,
+                        0x39, 0x3a, 0x42, 0x43, 0x50, 0x59, 0x5e, 0x64, 0x73, 0x7f,
+                        0xd1, 0xe3]
+    duplicate_event_item_dict = {
+        0xAFB0B : 0xAFB73,  # Gauntlet from Banon
+        0xAFFD2 : 0xAF975   # Genji Glove from returner
+        }
+
+    duplicate_event_item_skip_dict = {
+        0xAFFD2 : 0xAF975   # Genji Glove from returner
+        }
+    event_items_dict = {
+        "Narshe (WoB)" : [
+            EventItem(0x40, 0xF6, 0xCA00A, cutscene_skip_pointer=0xC9F87, monster=False, text=False),
+            EventItem(0x40, 0xF6, 0xCA00C, cutscene_skip_pointer=0xC9F89, monster=False, text=False),
+            EventItem(0x40, 0xCD, 0xCD59E, monster=False),
+        ],
+
+        "Figaro Castle":[
+            EventItem(0x40, 0xAA, 0xA66B4, cutscene_skip_pointer=0xA6633, monster=False, text=False),
+        ],
+
+        "Returner's Hideout" : [
+            EventItem(0x40, 0xD0, 0xAFB0B, cutscene_skip_pointer=0xAFAC9, monster=False, multiple=True),
+            EventItem(0x40, 0xD1, 0xAFFD2, cutscene_skip_pointer=0xAFDE7, monster=False),
+        ],
+
+        "Mobliz (WoB)" : [
+            EventItem(0x40, 0xE5, 0xC6883, monster=False),
+        ],
+
+        "Crescent Mountain" : [
+            EventItem(0x40, 0xE8, 0xBC432, postfix_bytes=[0x45, 0x45, 0x45], monster=False),
+        ],
+
+        "Sealed Gate" : [
+            EventItem(0x40, 0xAE, 0xB30E5, postfix_bytes=[0xD4, 0x4D, 0xFE]),
+            EventItem(0x40, 0xAC, 0xB3103, postfix_bytes=[0xD4, 0x4E, 0xFE]),
+            EventItem(0x40, 0xF5, 0xB3121, postfix_bytes=[0xD4, 0x4F, 0xFE]), # in vanilla: says Remedy, gives Soft. Changed to give Remedy.
+            EventItem(0x80, 0x14, 0xB313F, postfix_bytes=[0xD4, 0x50, 0xFE]), # in vanilla: says 2000 GP, gives 293 GP. Changed to give 2000 GP.
+        ],
+
+        "Vector" : [
+            EventItem(0x40, 0xE5, 0xC9257, monster=False),
+            EventItem(0x40, 0xDF, 0xC926C, monster=False),
+        ],
+
+        "Owzer's Mansion" : [
+            EventItem(0x80, 0x14, 0xB4A84, postfix_bytes=[0xD4, 0x59, 0x3A, 0xFE]), # in vanilla: says 2000 GP, gives 293 GP. Changed to give 2000 GP.
+            EventItem(0x40, 0xE9, 0xB4AC4, postfix_bytes=[0xD4, 0x5A, 0x3A, 0xFE]), # in vanilla: says Potion, gives Tonic. Changed to give Potion.
+            EventItem(0x40, 0xEC, 0xB4B03, postfix_bytes=[0xD4, 0x5B, 0x3A, 0xFE]), # in vanilla: says Ether, gives Tincture. Changed to give Ether.
+            EventItem(0x40, 0xF4, 0xB4B42, postfix_bytes=[0xD4, 0x5C, 0x3A, 0xFE]), # in vanilla: says Remedy, gives Soft. Changed to give Remedy.
+        ],
+
+        "Doma Castle" : [
+            EventItem(0x40, 0x30, 0xB99F4, monster=False, text=False),
+        ],
+
+        "Kohlingen" : [
+            EventItem(0x40, 0xEA, 0xC3240, monster=False),
+            EventItem(0x40, 0xF0, 0xC3242, monster=False),
+            EventItem(0x40, 0xED, 0xC3244, monster=False),
+            EventItem(0x40, 0xEE, 0xC3246, monster=False),
+            EventItem(0x40, 0x60, 0xC3248, monster=False),
+            EventItem(0x40, 0x09, 0xC324A, postfix_bytes=[0xFD, 0xFD, 0xFD], monster=False),
+            ],
+
+        "Narshe (WoR)" : [
+            EventItem(0x40, 0x1B, 0xC0B67, monster=False),
+            EventItem(0x40, 0x66, 0xC0B80, postfix_bytes=[0xFD, 0xD0, 0xB8, 0xFD, 0xFD], monster=False),
+        ],
+
+        "Fanatics Tower" : [
+            EventItem(0x40, 0x21, 0xC5598, postfix_bytes=[0xFD, 0xFD, 0xFD], monster=False),
+        ]
+    }
+    return
