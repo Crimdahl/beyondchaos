@@ -4884,6 +4884,7 @@ def randomize(args):
     f.write(get_logstring())
     f.close()
 
+    end_time = time()
     print("Randomization successful. Output filename: %s\n" % outfile)
     print("Time elapsed: %f\n" % (end_time - start_time))
 
