@@ -4411,6 +4411,7 @@ def randomize(args):
         "The randomization is very thorough, so it may take some time.\n"
         'Please be patient and wait for "randomization successful" to appear.')
 
+    start_time = time()
     if options_.is_code_active("thescenarionottaken"):
         diverge(fout)
 
@@ -4884,6 +4885,7 @@ def randomize(args):
     f.close()
 
     print("Randomization successful. Output filename: %s\n" % outfile)
+    print("Time elapsed: %f\n" % (end_time - start_time))
 
     if options_.is_code_active('bingoboingo'):
         manage_bingo()
